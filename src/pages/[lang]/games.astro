@@ -1,0 +1,23 @@
+---
+import Layout from "@layouts/Layout.astro";
+export function getStaticPaths() {
+    const STATIC_PATHS = [{ params: { lang: "en_US" } }, { params: { lang: "jp" } }];
+    return STATIC_PATHS;
+}
+export const prerender = true;
+---
+
+<Layout title="Chango Games">
+    <iframe id="chango" class="w-full h-full"></iframe>
+</Layout>
+<script>
+    import { setTransport, getSWStuff } from "@utils/registerSW.ts"; //../../utils/registerSW.ts
+    import { Settings } from "@utils/settings/index";
+    import { pageLoad } from "@utils/events";
+    pageLoad(async () => {
+        const { conn } = getSWStuff();
+        const iframe = document.getElementById("chango") as HTMLIFrameElement;
+        await setTransport(conn, localStorage.getItem(Settings.ProxySettings.transport) as string);
+        if (iframe) return iframe.src = __uv$config!.prefix + __uv$config.encodeUrl!("https://radon.games");
+    });
+</script>
